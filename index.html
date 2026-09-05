@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Chat Challenge | DreamPort</title>
+<meta name="description" content="Text back a real customer for 90 seconds and get your consultant score instantly.">
+
+<!-- Open Graph / ad-share preview tags -->
+<meta property="og:title" content="The Customer Chat Challenge | DreamPort">
+<meta property="og:description" content="You're a travel consultant. A customer just texted you. Reply your way through 5 quick messages and get your consultant score instantly.">
+<meta property="og:type" content="website">
+<!-- TODO before launch: add og:image (1200x630) and og:url once this is deployed -->
+
+<!-- ANALYTICS: paste your Meta Pixel / Google Ads conversion tag here before running this as an ad landing page -->
+
+<style>
+  :root{
+    /* Palette matches the live DreamPort Role-Play Assessment tool */
+    --ink:#181433;
+    --ink-soft:#433d6b;
+    --lav-0:#f4f2fb;
+    --lav-1:#eae6fb;
+    --lav-2:#ded7f8;
+    --coral:#e8543f;
+    --coral-deep:#c9402d;
+    --indigo:#5b4fd6;
+    --gold:#f0a72e;
+    --card:#ffffff;
+    --shadow: 0 10px 30px rgba(24,20,51,0.08), 0 2px 8px rgba(24,20,51,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #efe9ff 0%, transparent 60%),
+      radial-gradient(1000px 700px at 110% 10%, #fdece7 0%, transparent 55%),
+      var(--lav-0);
+    color:var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height:100vh;
+    padding: 28px 16px 60px;
+  }
+  .wrap{max-width:560px;margin:0 auto;}
+
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand .mark{width:30px;height:30px;position:relative;flex:none;}
+  .brand .mark svg{width:100%;height:100%;}
+  .brand .name{font-weight:800;letter-spacing:0.02em;font-size:15px;color:var(--ink);}
+  .brand .name b{color:var(--coral);}
+  .brand .sub{margin-left:auto;max-width:150px;text-align:right;font-size:10px;line-height:1.3;color:var(--ink-soft);font-weight:700;letter-spacing:.03em;text-transform:uppercase;}
+
+  .card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:26px;margin-bottom:18px;border:1px solid rgba(24,20,51,0.05);}
+
+  h1{font-family:'Georgia','Iowan Old Style',serif;font-size:34px;line-height:1.08;margin:6px 0;letter-spacing:-0.01em;}
+  .lede{color:var(--ink-soft);font-size:15.5px;max-width:52ch;margin:0 0 22px;}
+
+  .badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--lav-1);color:var(--indigo);margin-bottom:14px;}
+  .meta-row{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);font-weight:600;margin-bottom:22px;}
+  .meta-row span{display:flex;align-items:center;gap:6px;}
+
+  .btn{appearance:none;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:14.5px;padding:14px 22px;border-radius:12px;background:var(--ink);color:#fff;transition:transform .12s,box-shadow .12s,background .15s;width:100%;}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(24,20,51,0.18);}
+  .btn:active{transform:translateY(0);}
+  .btn.coral{background:var(--coral);}
+  .btn.coral:hover{background:var(--coral-deep);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--lav-2);}
+  .btn.ghost:hover{background:var(--lav-1);box-shadow:none;}
+
+  .hidden{display:none !important;}
+
+  /* progress dots */
+  .progress{display:flex;gap:6px;margin-bottom:18px;}
+  .progress .dot{flex:1;height:5px;border-radius:3px;background:var(--lav-2);}
+  .progress .dot.done{background:linear-gradient(90deg,var(--indigo),var(--coral));}
+
+  /* chat transcript */
+  .call-top{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--lav-1);margin-bottom:14px;}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--coral));flex:none;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .call-top .who{font-weight:800;font-size:14.5px;}
+  .call-top .status{font-size:11.5px;color:var(--ink-soft);font-weight:600;}
+
+  .transcript{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;padding:4px 2px 6px;margin-bottom:14px;}
+  .msg{max-width:82%;padding:11px 14px;border-radius:14px;font-size:14.5px;line-height:1.45;}
+  .msg.customer{background:var(--lav-1);align-self:flex-start;border-bottom-left-radius:4px;}
+  .msg.agent{background:var(--ink);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+
+  /* scenario reference — the actual options/prices/add-ons to sell, visible throughout
+     the whole conversation (collapsed by default so it doesn't crowd a short mobile quiz) */
+  .ref-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;background:var(--lav-1);border:1.5px solid var(--lav-2);border-radius:12px;padding:11px 14px;font-family:inherit;font-weight:700;font-size:13px;color:var(--ink);cursor:pointer;margin-bottom:10px;}
+  .ref-toggle:hover{border-color:var(--indigo);}
+  .ref-toggle .chev{transition:transform .15s;color:var(--ink-soft);}
+  .ref-toggle.open .chev{transform:rotate(180deg);}
+  .ref-panel{background:var(--lav-1);border-radius:12px;padding:12px;margin-bottom:14px;}
+  .ref-opt{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+  .ref-opt:last-of-type{margin-bottom:0;}
+  .ref-opt-head{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+  .ref-opt .letter{width:22px;height:22px;border-radius:50%;background:var(--lav-1);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:var(--indigo);flex:none;}
+  .ref-price{font-weight:800;font-size:16px;}
+  .ref-opt.b .ref-price{color:var(--coral-deep);}
+  .ref-airline{font-weight:700;font-size:13px;margin:2px 0 4px;}
+  .ref-line{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-bottom:6px;}
+  .ref-opt ul{margin:0;padding-left:16px;font-size:12px;color:var(--ink-soft);}
+  .ref-opt li{margin-bottom:2px;}
+  .ref-addons{margin-top:10px;padding:0 2px;font-size:12px;color:var(--ink-soft);}
+  .ref-addons b{color:var(--ink);}
+
+  /* real text composer — you actually type your reply, nothing is picked from a list */
+  .composer{display:flex;align-items:center;gap:8px;border:1.5px solid var(--lav-2);border-radius:22px;padding:6px 6px 6px 16px;background:#fff;transition:border-color .12s;}
+  .composer:focus-within{border-color:var(--indigo);}
+  .composer input{flex:1;min-width:0;border:none;outline:none;font-family:inherit;font-size:14.5px;background:transparent;color:var(--ink);padding:8px 0;}
+  .composer input::placeholder{color:#a39cc2;}
+  .send-btn{width:34px;height:34px;border-radius:50%;border:none;background:var(--ink);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;transition:background .12s,opacity .12s;}
+  .send-btn:disabled{opacity:.35;cursor:default;}
+  .send-btn:not(:disabled):hover{background:var(--coral);}
+  .composer-hint{font-size:11.5px;color:var(--ink-soft);text-align:center;margin:9px 0 0;}
+
+  /* result screen */
+  .result-eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;text-align:center;}
+
+  .score-wrap{position:relative;width:148px;height:148px;margin:4px auto 8px;}
+  .score-ring{width:100%;height:100%;}
+  #score-arc{stroke-dasharray:377;stroke-dashoffset:377;transition:stroke-dashoffset 1s ease;}
+  .score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .score-num{font-family:'Georgia','Iowan Old Style',serif;font-size:36px;font-weight:800;color:var(--ink);line-height:1;}
+  .score-label{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px;}
+
+  .score-explainer{font-size:12px;color:var(--ink-soft);text-align:center;line-height:1.5;max-width:34ch;margin:0 auto 18px;}
+  .score-explainer strong{color:var(--ink);}
+  .type-badge{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;}
+  .type-icon{font-size:22px;}
+  .type-title{font-family:'Georgia','Iowan Old Style',serif;font-size:21px;font-weight:800;}
+  .result-blurb{font-size:15px;color:var(--ink-soft);line-height:1.55;text-align:center;margin:0;}
+
+  .lead-form{margin:22px 0 4px;}
+  .lead-form label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:0 0 6px;}
+  .lead-form .field-row{display:flex;gap:10px;margin-bottom:12px;}
+  .lead-form input{flex:1;min-width:0;border:1.5px solid var(--lav-2);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;outline:none;background:#fff;}
+  .lead-form input:focus{border-color:var(--indigo);}
+  .lead-note{font-size:12px;color:var(--ink-soft);margin:0 0 16px;}
+
+  .cta-eyebrow{font-weight:800;font-size:15px;margin:0 0 10px;text-align:center;}
+
+  .foot-links{display:flex;justify-content:center;gap:18px;margin-top:6px;}
+  .foot-links button{background:none;border:none;font:inherit;font-size:13px;font-weight:700;color:var(--ink-soft);cursor:pointer;text-decoration:underline;padding:6px;}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);background:var(--ink);color:#fff;font-size:13.5px;font-weight:600;padding:11px 18px;border-radius:12px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="mark">
+      <svg viewBox="0 0 78 60" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="53,4 78,52 28,52" fill="#5b4fd6"></polygon>
+        <polygon points="26,22 41,52 11,52" fill="#e8543f"></polygon>
+        <polygon points="33.5,37 41,52 26,52" fill="#f0a72e"></polygon>
+      </svg>
+    </div>
+    <div class="name">DREAM<b>PORT</b></div>
+    <div class="sub">Independent Service Opportunity</div>
+  </div>
+
+  <div id="app">
+
+    <!-- INTRO -->
+    <section id="screen-intro" class="screen">
+      <div class="card">
+        <div class="badge">90-second challenge</div>
+        <h1>What's your consultant&nbsp;style?</h1>
+        <p class="lede">You're a travel consultant. A customer just texted you about the trip of a lifetime. You'll have real flight options and prices to work with — type your own replies through 5 quick messages, then get your consultant score instantly.</p>
+        <div class="meta-row">
+          <span>⏱️ ~90 seconds</span>
+          <span>🙈 No sign-up to play</span>
+          <span>✍️ Your own words</span>
+        </div>
+        <button class="btn coral" id="btn-start">Start the chat →</button>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="screen-quiz" class="screen hidden">
+      <div class="card">
+        <div class="progress" id="progress"></div>
+        <div class="call-top">
+          <div class="avatar">🧳</div>
+          <div>
+            <div class="who">Mia</div>
+            <div class="status">Prospective traveler</div>
+          </div>
+        </div>
+        <button class="ref-toggle" id="ref-toggle" type="button">
+          <span>📋 View flight options for Mia's trip</span>
+          <span class="chev">▾</span>
+        </button>
+        <div class="ref-panel hidden" id="ref-panel">
+          <div class="ref-opt">
+            <div class="ref-opt-head"><span class="letter">A</span><span class="ref-price">$340</span></div>
+            <div class="ref-airline">SkyValue Air</div>
+            <div class="ref-line">✈ Departs 9:15 PM → arrives 7:40 AM (+1 day) · 8h 25m · 1 stop in Athens</div>
+            <ul>
+              <li>Carry-on only (no checked bag)</li>
+              <li>Fixed dates, non-changeable</li>
+              <li>The budget-friendly option</li>
+            </ul>
+          </div>
+          <div class="ref-opt b">
+            <div class="ref-opt-head"><span class="letter">B</span><span class="ref-price">$495</span></div>
+            <div class="ref-airline">AegeanPlus</div>
+            <div class="ref-line">✈ Departs 11:00 AM → arrives 5:30 PM · 4h 30m · Nonstop</div>
+            <ul>
+              <li>Checked bag included</li>
+              <li>Free date changes</li>
+              <li>Preferred seat selection</li>
+            </ul>
+          </div>
+          <div class="ref-addons"><b>Optional add-ons:</b> hotel stay, travel insurance, eSIM data package, airport transfer.</div>
+        </div>
+        <div class="transcript" id="transcript"></div>
+        <div class="composer">
+          <input type="text" id="msg-input" maxlength="300" placeholder="Type your reply..." autocomplete="off">
+          <button class="send-btn" id="btn-send" disabled aria-label="Send">➤</button>
+        </div>
+        <p class="composer-hint">There's no wrong answer — just reply the way you naturally would.</p>
+      </div>
+    </section>
+
+    <!-- EMAIL GATE — collected before the result is revealed -->
+    <section id="screen-gate" class="screen hidden">
+      <div class="card">
+        <div class="badge">Almost there</div>
+        <h1 style="font-size:28px;">See your result</h1>
+        <p class="lede">Enter your name and email and we'll reveal your consultant score right away.</p>
+        <div class="lead-form">
+          <div class="field-row">
+            <div style="flex:1;">
+              <label for="gate-name">Name</label>
+              <input type="text" id="gate-name" placeholder="Your name" autocomplete="name">
+            </div>
+          </div>
+          <div class="field-row">
+            <div style="flex:1;">
+              <label for="gate-email">Email</label>
+              <input type="email" id="gate-email" placeholder="you@email.com" autocomplete="email">
+            </div>
+          </div>
+          <p class="lead-note" id="gate-error" style="display:none;color:var(--coral-deep);">Please enter your name and a valid email.</p>
+        </div>
+        <button class="btn coral" id="btn-reveal">Reveal my result →</button>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="screen-result" class="screen hidden">
+      <div class="card">
+        <div class="result-eyebrow" id="result-eyebrow">Your result</div>
+
+        <div class="score-wrap">
+          <svg viewBox="0 0 140 140" class="score-ring">
+            <defs>
+              <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#5b4fd6"/>
+                <stop offset="100%" stop-color="#e8543f"/>
+              </linearGradient>
+            </defs>
+            <circle cx="70" cy="70" r="60" fill="none" stroke="#eae6fb" stroke-width="14"/>
+            <circle id="score-arc" cx="70" cy="70" r="60" fill="none" stroke="url(#scoreGrad)" stroke-width="14" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+          </svg>
+          <div class="score-center">
+            <div class="score-num" id="score-num">0%</div>
+            <div class="score-label">Consultant Score</div>
+          </div>
+        </div>
+        <p class="score-explainer">Based on empathy, confidence, and closing language across your 5 replies. Strongest signal: <strong id="score-trait">Empathy</strong>.</p>
+
+        <div class="type-badge">
+          <span class="type-icon" id="result-icon">🌟</span>
+          <span class="type-title" id="result-title">The Rising Star</span>
+        </div>
+        <p class="result-blurb" id="result-blurb">...</p>
+      </div>
+
+      <div class="card">
+        <!-- Name + email were already collected on the gate screen before the result was
+             revealed, and sent to the spreadsheet endpoint at that point (see submitToSheet
+             in the script below). This card is just the conversion CTA. -->
+        <p class="cta-eyebrow">Think you've got what it takes? Apply now.</p>
+        <button class="btn coral" id="btn-apply">Apply now →</button>
+        <div style="height:10px;"></div>
+        <button class="btn ghost" id="btn-copy">📋 Copy my result to share</button>
+      </div>
+
+      <div class="foot-links">
+        <button id="btn-restart">↻ Take it again</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var APPLY_URL = "https://www.dreamport.me/en?utm_source=role+play";
+  var SHARE_URL = "https://REPLACE-ME.dreamport.example/customer-chat-challenge";
+
+  // TODO before launch: paste the /exec URL of a Google Apps Script Web App bound to your
+  // results spreadsheet. See README.md for the ready-to-paste Apps Script code and the
+  // 5-minute setup (Extensions > Apps Script > paste > Deploy > Web app > Anyone > copy URL).
+  // Until this is set, submissions are just logged to the console — nothing breaks.
+  var SHEET_ENDPOINT = "https://REPLACE-ME.script.google.com/macros/s/REPLACE-ME/exec";
+
+  // ---- content: a hand-authored branching dialogue tree, no live AI calls ----
+  // You type your own reply at every step (a real text box, not a list to pick from).
+  // Mia's *next* line still comes from a small pre-written script — it just picks between
+  // a "warm" and a "brisk" variant depending on the tone of what you typed (see scoreText
+  // below), so the conversation still visibly reacts to you without needing a live AI call
+  // to understand free text, which is what keeps this free to run at any volume.
+  var TREE = {
+    start: {
+      customer: "Hi! I'm dreaming of a trip to Santorini for my 30th birthday this October, but I honestly don't know where to start 😅",
+      hint: "Type how you'd reply to Mia..."
+    },
+    n2: {
+      warm:  "Aww, thank you! Honestly just relaxing, maybe one sunset cruise. I've never done a big trip like this, so I'm a little nervous about picking the “right” flight.",
+      brisk: "Great — I'm pretty busy this week, so the faster the better. What are my options?",
+      hint: "Type your reply..."
+    },
+    n3: {
+      warm:  "Okay, that actually really helps, thank you for explaining! So which one do you think is better for me — Option A or B?",
+      brisk: "Okay, show me both — which one's the better deal, A or B?",
+      hint: "Type your reply..."
+    },
+    n4: {
+      warm:  "That makes sense... actually, can I be honest? My best friend is planning almost the same trip and found a much cheaper flight elsewhere. Now I feel weird about paying more.",
+      brisk: "Wait, actually — my friend just told me she found a way cheaper flight for basically the same trip. Now I'm second-guessing this.",
+      hint: "Type your reply..."
+    },
+    n5: {
+      warm:  "Okay, I feel a lot better about it now. I think I'm ready... what happens next?",
+      brisk: "Alright, you've convinced me. What do I need to do now?",
+      hint: "Type your reply..."
+    }
+  };
+  var ORDER = ["start", "n2", "n3", "n4", "n5"];
+
+  var RESULTS = {
+    conf: {
+      icon: "🌟", title: "The Rising Star",
+      blurb: "You walk into a conversation like you already know how it ends — confidently, and usually in your favor. Customers feel your energy before you've said much of anything, and that presence does half the work on its own."
+    },
+    emp: {
+      icon: "🤝", title: "The Relationship Builder",
+      blurb: "You lead with real curiosity, and customers can tell — they open up to you because they know you're solving for them, not just closing a ticket. That kind of trust is what turns a single booking into a client for life."
+    },
+    close: {
+      icon: "🎯", title: "The Natural Closer",
+      blurb: "You know exactly when the moment is right, and you don't let it slide by. While others hesitate, you turn hesitation into a clear next step — decisively, without ever feeling pushy."
+    },
+    balanced: {
+      icon: "🧭", title: "The Complete Consultant",
+      blurb: "You don't lean on just one move — you read the room and bring whatever it needs: warmth, confidence, or a clean close. That range is rare, and it's exactly the profile that ramps up fastest in a role like this."
+    }
+  };
+
+  // ---- lightweight local scoring (no AI call) ----
+  // Scans whatever you typed for a few plain-language cues per trait. This is a transparent,
+  // fast heuristic for a shareable ad quiz — not real language understanding — and it's the
+  // *entire* evaluation: three cue lists (below) plus a hedging/caving list plus one length
+  // check per message. It does NOT reward a reply just for existing: a short, generic reply
+  // with no matching language (e.g. "ok", "sure thing") legitimately scores 0 for that
+  // message. See computePercent() for exactly how those five per-message scores turn into
+  // the on-screen percentage.
+  var CUES = {
+    emp:   [/sorry/, /understand/, /\bfeel/, /appreciate/, /hear (you|that)/, /no worries/, /totally get/, /congrat/, /excit/, /\bhow\b/, /\?/, /\baww?\b/, /makes? sense/, /fair (point|question|thing)/, /that must/],
+    conf:  [/definitely/, /absolutely/, /great (choice|pick)/, /\bi'?ll\b/, /right away/, /no problem/, /perfect/, /\bbest\b/, /recommend/, /confiden/, /!/, /trust me/, /honestly/, /worth (it|the extra)/, /here'?s why/, /\bincludes?\b/],
+    close: [/\bbook/, /confirm/, /\bbuy\b/, /purchase/, /lock (it|this|that) in/, /\bdeal\b/, /\byes\b/, /\bsign/, /let'?s do (this|it)/, /\bready\b/, /secure/, /\bpay\b/, /checkout/, /go ahead/, /next step/, /before.*(change|move|gone)/]
+  };
+  var TRAIT_LABEL = { emp: "Empathy", conf: "Confidence", close: "Closing" };
+
+  // Hedging, passive, or price-caving language. This doesn't touch the three trait lists
+  // above (so it never changes which personality type someone gets) — it only docks the
+  // effort score that feeds the percentage. Raw keyword-counting alone can't tell "I
+  // understand, and here's why it's worth it" from "I guess, whatever you want" — both can
+  // rack up matches elsewhere — so this list exists specifically to catch the second kind.
+  var WEAK_CUES = [
+    /\bi guess\b/, /i suppose/,
+    /whatever you (want|think|prefer|like)/,
+    /it'?s (totally |completely )?up to you/,
+    /\byou decide\b/,
+    /no pressure/,
+    /take your time/,
+    /i'?m not (sure|certain)/,
+    /\bnot sure\b/,
+    /don'?t know/,
+    /\bmaybe\b/,
+    /if that'?s (ok|okay|alright)/,
+    /either (one|way) (is fine|works|is good)/,
+    /doesn'?t (really )?matter/,
+    /whenever (you'?re|is) (ready|good|convenient)/,
+    /i can (lower|discount|reduce|drop|knock)/,
+    /match (that|it|the price)/,
+    /give you a discount/,
+    /price match/,
+    /take (some|a bit) off/,
+    /special (deal|discount) for you/,
+    /i'?ll (lower|drop|reduce) (it|the price)/
+  ];
+
+  function scoreText(text){
+    var t = (text || "").toLowerCase();
+    var scores = { emp: 0, conf: 0, close: 0 };
+    Object.keys(CUES).forEach(function(trait){
+      var pts = 0;
+      CUES[trait].forEach(function(re){ if (re.test(t)) pts++; });
+      scores[trait] = Math.min(pts, 3);
+    });
+    return scores;
+  }
+
+  function countWeakHits(text){
+    var t = (text || "").toLowerCase();
+    var n = 0;
+    WEAK_CUES.forEach(function(re){ if (re.test(t)) n++; });
+    return n;
+  }
+
+  // Per message (0-4): +1 for each of the 3 trait categories it hits (empathy/confidence/
+  // closing language), +1 flat if it's a real sentence (15+ characters) rather than a
+  // one-word filler, then hedging/caving language docks up to 2 points. A message that hits
+  // nothing and is short scores a genuine 0.
+  //
+  // Two moments get sharper treatment, mirroring the private assessment's rubric (where
+  // caving on price and never attempting a close are the clearest markers of a weak sales
+  // instinct):
+  //  - n4 is the price-objection moment. Any hedge/cave language here — "I can give you a
+  //    discount," "I guess, up to you" — zeroes the message outright, no matter what else
+  //    it hit. Defending the value instead (without caving) keeps full credit.
+  //  - n5 is the closing moment. The same hedge/cave override applies, and on top of that,
+  //    a reply with no closing language at all ("book," "confirm," "next step"...) is capped
+  //    at 2 points even if it's warm or confident — warmth without a close doesn't close.
+  function messageEffort(text, scores, weakHits, nodeId){
+    var categoriesHit = (scores.emp > 0 ? 1 : 0) + (scores.conf > 0 ? 1 : 0) + (scores.close > 0 ? 1 : 0);
+    var lengthBonus = text.trim().length >= 15 ? 1 : 0;
+    var points = categoriesHit + lengthBonus;
+
+    if (weakHits > 0) points -= Math.min(weakHits, 2);
+
+    if ((nodeId === "n4" || nodeId === "n5") && weakHits > 0) points = 0;
+    if (nodeId === "n5" && scores.close === 0) points = Math.min(points, 2);
+
+    return Math.max(0, Math.min(4, points));
+  }
+
+  function dominantTrait(scores){
+    var order = ["emp", "conf", "close"];
+    var best = order[0];
+    order.forEach(function(t){ if (scores[t] > scores[best]) best = t; });
+    return scores[best] > 0 ? best : "conf";
+  }
+
+  // ---- state ----
+  var state = { stepIndex: 0, mood: null, scores: { conf: 0, emp: 0, close: 0 }, effort: 0, path: [], lead: null };
+
+  // ---- screens ----
+  var screens = {
+    intro: document.getElementById("screen-intro"),
+    quiz: document.getElementById("screen-quiz"),
+    gate: document.getElementById("screen-gate"),
+    result: document.getElementById("screen-result")
+  };
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){ screens[k].classList.toggle("hidden", k !== name); });
+  }
+
+  var transcriptEl = document.getElementById("transcript");
+  var progressEl = document.getElementById("progress");
+  var inputEl = document.getElementById("msg-input");
+  var sendBtn = document.getElementById("btn-send");
+  var refToggleEl = document.getElementById("ref-toggle");
+  var refPanelEl = document.getElementById("ref-panel");
+
+  refToggleEl.addEventListener("click", function(){
+    var willShow = refPanelEl.classList.contains("hidden");
+    refPanelEl.classList.toggle("hidden", !willShow);
+    refToggleEl.classList.toggle("open", willShow);
+  });
+
+  function renderProgress(){
+    progressEl.innerHTML = "";
+    for (var i = 0; i < ORDER.length; i++){
+      var d = document.createElement("div");
+      d.className = "dot" + (i < state.stepIndex ? " done" : "");
+      progressEl.appendChild(d);
+    }
+  }
+
+  function addMessage(text, who){
+    var el = document.createElement("div");
+    el.className = "msg " + who;
+    el.textContent = text;
+    transcriptEl.appendChild(el);
+    transcriptEl.scrollTop = transcriptEl.scrollHeight;
+  }
+
+  function renderNode(){
+    renderProgress();
+    var nodeId = ORDER[state.stepIndex];
+    var node = TREE[nodeId];
+    var line = (nodeId === "start") ? node.customer : node[state.mood || "brisk"];
+    addMessage(line, "customer");
+    inputEl.value = "";
+    inputEl.placeholder = node.hint || "Type your reply...";
+    inputEl.disabled = false;
+    sendBtn.disabled = true;
+    inputEl.focus();
+  }
+
+  function send(){
+    var text = inputEl.value.trim();
+    if (text.length < 2) return;
+
+    var nodeId = ORDER[state.stepIndex]; // which node this reply is answering, before we advance
+
+    inputEl.disabled = true;
+    sendBtn.disabled = true;
+    addMessage(text, "agent");
+
+    var msgScores = scoreText(text);
+    var weakHits = countWeakHits(text);
+    state.scores.emp += msgScores.emp;
+    state.scores.conf += msgScores.conf;
+    state.scores.close += msgScores.close;
+    state.effort += messageEffort(text, msgScores, weakHits, nodeId);
+
+    var trait = dominantTrait(msgScores);
+    state.path.push(trait);
+    state.mood = (trait === "emp") ? "warm" : "brisk";
+    state.stepIndex += 1;
+
+    setTimeout(function(){
+      if (state.stepIndex < ORDER.length){
+        renderNode();
+      } else {
+        renderProgress();
+        showGate();
+      }
+    }, 450);
+  }
+
+  inputEl.addEventListener("input", function(){
+    sendBtn.disabled = inputEl.value.trim().length < 2;
+  });
+  inputEl.addEventListener("keydown", function(e){
+    if (e.key === "Enter" && !sendBtn.disabled) send();
+  });
+  sendBtn.addEventListener("click", send);
+
+  function showGate(){
+    document.getElementById("gate-name").value = "";
+    document.getElementById("gate-email").value = "";
+    document.getElementById("gate-error").style.display = "none";
+    showScreen("gate");
+  }
+
+  function topTrait(scores){
+    var order = ["conf", "emp", "close"];
+    return order.slice().sort(function(a, b){ return scores[b] - scores[a]; })[0];
+  }
+
+  function pickResultKey(scores){
+    var order = ["conf", "emp", "close"];
+    var sorted = order.slice().sort(function(a, b){ return scores[b] - scores[a]; });
+    var top = sorted[0], second = sorted[1];
+    if (scores[top] - scores[second] <= 1) return "balanced";
+    return top;
+  }
+
+  // Turns the total effort score (0-20 across 5 messages, 4 points max each — see
+  // messageEffort above) into the displayed percentage. This is a genuine, discriminating
+  // scale, not a flattering floor: five generic one-liners ("ok" / "sure thing") with no
+  // empathy/confidence/closing language and no real sentence length score close to 0.
+  // The 5-98 band (instead of a literal 0-100) just avoids a jarring "0%"/"100%" on what's
+  // still a fun ad quiz, not a certified test.
+  function computePercent(effort){
+    var raw = Math.max(0, Math.min(20, effort)) / 20; // 0..1, true measure
+    return Math.round(5 + raw * 93); // 5..98
+  }
+
+  function showResult(){
+    var key = pickResultKey(state.scores);
+    var r = RESULTS[key];
+    var percent = computePercent(state.effort);
+    var firstName = state.lead && state.lead.name ? state.lead.name.split(" ")[0] : "";
+
+    document.getElementById("result-eyebrow").textContent = "Your result" + (firstName ? ", " + firstName : "");
+    document.getElementById("result-icon").textContent = r.icon;
+    document.getElementById("result-title").textContent = r.title;
+    document.getElementById("result-blurb").textContent = r.blurb;
+    document.getElementById("score-num").textContent = percent + "%";
+    document.getElementById("score-trait").textContent = TRAIT_LABEL[topTrait(state.scores)];
+
+    var circumference = 377; // 2 * PI * r(60), rounded
+    var arc = document.getElementById("score-arc");
+    requestAnimationFrame(function(){
+      arc.style.strokeDashoffset = String(circumference * (1 - percent / 100));
+    });
+
+    showScreen("result");
+    window._lastResult = { title: r.title, percent: percent };
+  }
+
+  function resetQuiz(){
+    state = { stepIndex: 0, mood: null, scores: { conf: 0, emp: 0, close: 0 }, effort: 0, path: [], lead: null };
+    transcriptEl.innerHTML = "";
+    refPanelEl.classList.add("hidden");
+    refToggleEl.classList.remove("open");
+    document.getElementById("score-arc").style.strokeDashoffset = "377";
+    showScreen("quiz");
+    renderNode();
+  }
+
+  // Sends one row to a Google Sheet via an Apps Script Web App — see the SHEET_ENDPOINT
+  // comment above and README.md for the copy-pasteable Apps Script + deploy steps.
+  // Uses mode:"no-cors" + a text/plain content type, which is the standard way to POST to
+  // Apps Script from a static page without triggering a CORS preflight it can't answer.
+  // This never blocks the UI: the result still reveals even if the request fails.
+  function submitToSheet(payload){
+    if (!SHEET_ENDPOINT || SHEET_ENDPOINT.indexOf("REPLACE-ME") !== -1){
+      console.warn("SHEET_ENDPOINT not configured yet — skipping spreadsheet write. See README.md.", payload);
+      return;
+    }
+    fetch(SHEET_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).catch(function(err){ console.warn("Spreadsheet write failed (non-blocking):", err); });
+  }
+
+  function showToast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function(){ t.classList.remove("show"); }, 2000);
+  }
+
+  document.getElementById("btn-start").addEventListener("click", resetQuiz);
+  document.getElementById("btn-restart").addEventListener("click", resetQuiz);
+
+  ["gate-name", "gate-email"].forEach(function(id){
+    document.getElementById(id).addEventListener("keydown", function(e){
+      if (e.key === "Enter") document.getElementById("btn-reveal").click();
+    });
+  });
+
+  document.getElementById("btn-reveal").addEventListener("click", function(){
+    var name = document.getElementById("gate-name").value.trim();
+    var email = document.getElementById("gate-email").value.trim();
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!name || !emailOk){
+      document.getElementById("gate-error").style.display = "block";
+      return;
+    }
+    document.getElementById("gate-error").style.display = "none";
+    state.lead = { name: name, email: email };
+
+    var key = pickResultKey(state.scores);
+    var percent = computePercent(state.effort);
+    submitToSheet({
+      timestamp: new Date().toISOString(),
+      name: name,
+      email: email,
+      type: RESULTS[key].title,
+      score: percent,
+      confidence: state.scores.conf,
+      empathy: state.scores.emp,
+      closing: state.scores.close,
+      path: state.path.join(">")
+    });
+
+    showResult();
+  });
+
+  document.getElementById("btn-apply").addEventListener("click", function(){
+    window.open(APPLY_URL, "_blank", "noopener");
+  });
+
+  document.getElementById("btn-copy").addEventListener("click", function(){
+    var r = window._lastResult || { title: RESULTS.balanced.title, percent: 70 };
+    var text = "I just scored " + r.percent + "% (“" + r.title + "”) on DreamPort's Customer Chat Challenge 🧭 Take it here: " + SHARE_URL;
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ showToast("Copied! Paste it anywhere ✨"); });
+    } else {
+      showToast(text);
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
