@@ -1,0 +1,12 @@
+{
+  "name": "dreamport-chat-assessment",
+  "version": "2.0.0",
+  "private": true,
+  "description": "DreamPort Travel Consultant chat role-play assessment (BQ follow-up scenario). Static frontend + Vercel serverless functions + Anthropic API.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "dev": "node scripts/dev-server.js",
+    "smoke": "node scripts/smoke-test.js"
+  }
+}

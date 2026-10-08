@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Chat Role-Play Assessment | DreamPort</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 78 60'%3E%3Cpolygon points='53,4 78,52 28,52' fill='%235b4fd6'/%3E%3Cpolygon points='26,22 41,52 11,52' fill='%23e8543f'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --ink:#181433; --ink-soft:#433d6b; --muted:#6f6996;
+    --lav-0:#f4f2fb; --lav-1:#eae6fb; --lav-2:#ded7f8;
+    --coral:#e8543f; --coral-deep:#c9402d; --indigo:#5b4fd6; --gold:#f0a72e; --green:#1f8a5b;
+    --card:#fff; --shadow:0 10px 30px rgba(24,20,51,.08),0 2px 8px rgba(24,20,51,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 600px at 15% -10%,#efe9ff 0%,transparent 60%),radial-gradient(1000px 700px at 110% 10%,#fdece7 0%,transparent 55%),var(--lav-0);
+    color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:24px 16px 48px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  .narrow{max-width:620px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .brand .mark{width:30px;height:30px;flex:none}
+  .brand .name{font-weight:800;letter-spacing:.02em;font-size:15px}
+  .brand .name b{color:var(--coral)}
+  .brand .sub{margin-left:auto;text-align:right;font-size:10px;line-height:1.3;color:var(--ink-soft);font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+  .card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:26px;margin-bottom:18px;border:1px solid rgba(24,20,51,.05)}
+  h1{font-family:Georgia,'Iowan Old Style',serif;font-size:32px;line-height:1.1;margin:6px 0 10px;letter-spacing:-.01em}
+  h2{font-size:15px;margin:22px 0 8px}
+  .lede{color:var(--ink-soft);font-size:15.5px;line-height:1.55;margin:0 0 20px}
+  .badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--lav-1);color:var(--indigo);margin-bottom:10px}
+  .btn{appearance:none;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:15px;padding:14px 22px;border-radius:12px;background:var(--coral);color:#fff;transition:transform .12s,box-shadow .12s,background .15s;width:100%;text-align:center;text-decoration:none;display:block}
+  .btn:hover{background:var(--coral-deep);transform:translateY(-1px);box-shadow:0 6px 16px rgba(24,20,51,.18)}
+  .btn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+  .btn.dark{background:var(--ink)} .btn.dark:hover{background:#2a2550}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--lav-2)} .btn.ghost:hover{background:var(--lav-1);box-shadow:none}
+  .hidden{display:none!important}
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:0 0 6px}
+  .field{margin-bottom:14px}
+  .field input{width:100%;border:1.5px solid var(--lav-2);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;outline:none;background:#fff}
+  .field input:focus{border-color:var(--indigo)}
+  .err{color:var(--coral-deep);font-size:13px;font-weight:600;margin:-4px 0 12px}
+  .note{font-size:12.5px;color:var(--muted);margin:12px 0 0}
+  ul.rules{margin:0;padding-left:20px;color:var(--ink-soft);font-size:14.5px;line-height:1.6}
+  ul.rules b{color:var(--ink)}
+  .goal{background:var(--lav-1);border-left:4px solid var(--indigo);border-radius:10px;padding:12px 14px;font-size:14.5px;line-height:1.55}
+
+  /* chat layout */
+  .chat-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+  .chat-card{display:flex;flex-direction:column;height:calc(100vh - 110px);min-height:520px;padding:0;overflow:hidden}
+  .chat-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--lav-1)}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--coral));color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+  .who{font-weight:800;font-size:14.5px}
+  .status{font-size:11.5px;color:var(--muted);font-weight:600}
+  .status.on::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#2fbf71;margin-right:5px}
+  .timer{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:800;font-size:13px;background:var(--lav-1);padding:6px 10px;border-radius:8px}
+  .timer.low{background:#fde3df;color:var(--coral-deep)}
+  .transcript{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:#fcfbff}
+  .sys{align-self:center;font-size:12px;color:var(--muted);background:var(--lav-1);padding:6px 12px;border-radius:20px;text-align:center}
+  .msg{max-width:78%;padding:10px 14px;border-radius:14px;font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+  .msg.customer{background:var(--lav-1);align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.agent{background:var(--ink);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .typing{align-self:flex-start;background:var(--lav-1);border-radius:14px;padding:12px 14px;display:flex;gap:4px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:b 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+  .composer-wrap{border-top:1px solid var(--lav-1);padding:12px 14px 10px;background:#fff}
+  .composer{display:flex;align-items:flex-end;gap:8px;border:1.5px solid var(--lav-2);border-radius:16px;padding:6px 6px 6px 14px}
+  .composer:focus-within{border-color:var(--indigo)}
+  .composer textarea{flex:1;min-width:0;border:none;outline:none;font:inherit;font-size:14.5px;resize:none;max-height:140px;padding:8px 0;background:transparent;color:var(--ink)}
+  .send-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--ink);color:#fff;font-size:15px;cursor:pointer;flex:none}
+  .send-btn:disabled{opacity:.35;cursor:default}
+  .send-btn:not(:disabled):hover{background:var(--coral)}
+  .composer-foot{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--muted);margin-top:7px}
+  .linkbtn{background:none;border:none;font:inherit;font-size:12px;font-weight:700;color:var(--ink-soft);text-decoration:underline;cursor:pointer;padding:2px}
+  .confirm-end{display:flex;gap:8px;align-items:center;font-size:12.5px;font-weight:600;color:var(--ink)}
+  .confirm-end button{font:inherit;font-size:12px;font-weight:700;border-radius:8px;padding:5px 10px;cursor:pointer;border:1.5px solid var(--lav-2);background:#fff}
+  .confirm-end button.yes{background:var(--coral);color:#fff;border-color:var(--coral)}
+
+  /* reference panel */
+  .ref{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;padding:18px}
+  .ref h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  .ref-block{margin-bottom:16px}
+  .kv{font-size:13px;line-height:1.55;color:var(--ink-soft)}
+  .kv b{color:var(--ink)}
+  .crm{font-size:12.5px;background:#fff8ea;border:1px solid #f6dfae;border-radius:10px;padding:9px 11px;color:#6b5418;line-height:1.45}
+  .opt{border:1.5px solid var(--lav-2);border-radius:12px;padding:12px 13px;margin-bottom:10px}
+  .opt-head{display:flex;align-items:center;gap:8px}
+  .letter{width:24px;height:24px;border-radius:50%;background:var(--lav-1);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--indigo);flex:none}
+  .opt-air{font-weight:800;font-size:14px}
+  .opt-price{margin-left:auto;font-weight:800;font-size:16px}
+  .opt-line{font-size:12px;color:var(--ink-soft);margin:6px 0 4px;font-weight:600}
+  .opt ul{margin:0;padding-left:16px;font-size:12px;color:var(--ink-soft);line-height:1.5}
+  .addon{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);padding:4px 0;border-bottom:1px dashed var(--lav-2)}
+  .addon:last-child{border-bottom:none}
+  .fine{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+  .ref-toggle{display:none}
+
+  /* end screens */
+  .center{text-align:center}
+  .spinner{width:44px;height:44px;border-radius:50%;border:4px solid var(--lav-2);border-top-color:var(--indigo);animation:spin 1s linear infinite;margin:10px auto 18px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hero-icon{font-size:46px;margin:4px 0 6px}
+  .end-actions{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+  .pass-glow{background:linear-gradient(135deg,#fff 0%,#fff7ef 100%)}
+  .perks{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:16px 0 0}
+  .perks span{font-size:12.5px;font-weight:700;color:var(--ink-soft);background:var(--lav-1);border-radius:20px;padding:6px 12px}
+
+  @media (max-width:880px){
+    .chat-grid{grid-template-columns:1fr}
+    .ref{position:static;max-height:none;order:-1}
+    .ref-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;background:var(--lav-1);border:1.5px solid var(--lav-2);border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:12px;color:var(--ink)}
+    .ref.collapsed .ref-body{display:none}
+    .ref.collapsed .ref-toggle{margin-bottom:0}
+    .chat-card{height:72vh}
+    .msg{max-width:88%}
+    h1{font-size:27px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="mark"><svg viewBox="0 0 78 60" xmlns="http://www.w3.org/2000/svg"><polygon points="53,4 78,52 28,52" fill="#5b4fd6"/><polygon points="26,22 41,52 11,52" fill="#e8543f"/><polygon points="33.5,37 41,52 26,52" fill="#f0a72e"/></svg></div>
+    <div class="name">DREAM<b>PORT</b></div>
+    <div class="sub">Travel Consultant<br>Chat Assessment</div>
+  </div>
+
+  <!-- 1. IDENTIFY -->
+  <section id="s-id" class="narrow">
+    <div class="card">
+      <div class="badge">Chat role-play</div>
+      <h1>Your first day as a Travel Consultant</h1>
+      <p class="lede">In this short assessment you'll chat, in writing, with a customer. It takes about 10–15 minutes. Please use a computer if you can, and make sure you won't be interrupted.</p>
+      <div class="field">
+        <label for="cand">Email address *</label>
+        <input id="cand" type="email" maxlength="120" autocomplete="email" inputmode="email" placeholder="you@example.com">
+        <div class="note" style="margin-top:6px">Use the same email you applied with, so we can match your result.</div>
+      </div>
+      <div class="field hidden" id="code-field">
+        <label for="code">Access code *</label>
+        <input id="code" maxlength="60" autocomplete="off" placeholder="Code from your recruiter">
+      </div>
+      <p class="err hidden" id="id-err"></p>
+      <button class="btn" id="btn-id">Continue →</button>
+    </div>
+  </section>
+
+  <!-- 2. BRIEFING -->
+  <section id="s-brief" class="narrow hidden">
+    <div class="card">
+      <div class="badge">Your situation</div>
+      <h1 id="brief-title">A lead from the follow-up queue</h1>
+      <p class="lede" id="brief-lede"></p>
+      <div class="goal" id="brief-goal"></div>
+      <h2>Ground rules</h2>
+      <ul class="rules">
+        <li>There are exactly <b>two ticket options</b>. You'll see them, with all details, in a reference panel next to the chat the whole time.</li>
+        <li><b>Listed prices are final.</b> No discounts, price matching or negotiation on the ticket price.</li>
+        <li><b>Recommend the option that fits the customer's needs</b> — you'll need to find out what those are. Add-ons are optional; offer them only if they're relevant.</li>
+        <li>Use only the facts in the panel. Don't invent fees, promotions, seats or policies.</li>
+        <li><b>You send the first message.</b> Write as you would to a real customer — clear, professional, in your own words.</li>
+        <li>The chat ends when the customer decides, or after <b id="brief-time">15</b> minutes. Copy &amp; paste is disabled.</li>
+      </ul>
+      <div style="height:20px"></div>
+      <button class="btn" id="btn-begin">Open the chat →</button>
+    </div>
+  </section>
+
+  <!-- 3. CHAT -->
+  <section id="s-chat" class="hidden">
+    <div class="chat-grid">
+      <div class="card chat-card">
+        <div class="chat-head">
+          <div class="avatar" id="cust-initial">?</div>
+          <div>
+            <div class="who" id="cust-name">Customer</div>
+            <div class="status on" id="cust-status">Online · website chat</div>
+          </div>
+          <div class="timer" id="timer">15:00</div>
+        </div>
+        <div class="transcript" id="transcript"></div>
+        <div class="composer-wrap">
+          <div class="composer">
+            <textarea id="msg" rows="1" placeholder="Write your message…" autocomplete="off" spellcheck="true"></textarea>
+            <button class="send-btn" id="btn-send" disabled aria-label="Send">➤</button>
+          </div>
+          <div class="composer-foot">
+            <span id="hint">Enter to send · Shift+Enter for a new line</span>
+            <span id="end-wrap"><button class="linkbtn" id="btn-end">End chat</button></span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card ref" id="ref">
+        <button class="ref-toggle" id="ref-toggle" type="button"><span>📋 Customer &amp; ticket options</span><span id="ref-chev">▴</span></button>
+        <div class="ref-body">
+          <div class="ref-block">
+            <h3>Customer</h3>
+            <div class="kv" id="ref-cust"></div>
+          </div>
+          <div class="ref-block">
+            <h3>Lead history (CRM)</h3>
+            <div class="crm" id="ref-crm"></div>
+          </div>
+          <div class="ref-block">
+            <h3>Ticket options</h3>
+            <div id="ref-opts"></div>
+            <div class="fine" id="ref-pricenote"></div>
+          </div>
+          <div class="ref-block" style="margin-bottom:0">
+            <h3>Optional add-ons</h3>
+            <div id="ref-addons"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 4. PROCESSING -->
+  <section id="s-wait" class="narrow hidden">
+    <div class="card center">
+      <div class="spinner"></div>
+      <h1 style="font-size:24px">Wrapping up your conversation…</h1>
+      <p class="lede" style="margin:0">This takes a few seconds. Please keep this page open.</p>
+    </div>
+  </section>
+
+  <!-- 5a. PASS -->
+  <section id="s-pass" class="narrow hidden">
+    <div class="card center pass-glow">
+      <div class="hero-icon">🌟</div>
+      <div class="badge">Assessment complete</div>
+      <h1 id="pass-title">You're exactly who we're looking for!</h1>
+      <p class="lede">You handled a real customer conversation with the confidence, care and clarity our best Travel Consultants bring every day. You're a strong fit for this position — and we'd love to have you on the team.</p>
+      <p class="lede" style="margin-bottom:0"><b>Your next step: join us.</b> Complete your application now and we'll be in touch about getting you started.</p>
+      <div class="perks"><span>✈️ Work with travellers worldwide</span><span>🎓 Full onboarding</span><span>🚀 Start fast</span></div>
+      <div class="end-actions">
+        <a class="btn" id="pass-apply" target="_blank" rel="noopener">Join us — apply here →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5b. NOT READY YET -> FREE TRAINING -->
+  <section id="s-train" class="narrow hidden">
+    <div class="card center">
+      <div class="hero-icon">🌱</div>
+      <div class="badge">Assessment complete</div>
+      <h1 id="train-title">Thank you — you're not quite ready yet</h1>
+      <p class="lede">Every great Travel Consultant starts somewhere, and this conversation shows you have a foundation to build on. You're not quite ready for this role yet — but that can change quickly.</p>
+      <p class="lede" style="margin-bottom:0"><b>We offer free training</b> that covers exactly the skills you need: understanding customers, recommending with confidence and closing the right way. Start your training and come back stronger.</p>
+      <div class="end-actions">
+        <a class="btn" id="train-start" target="_blank" rel="noopener">Start your free training →</a>
+        <a class="btn ghost" id="train-apply" target="_blank" rel="noopener">Apply here</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5c. NEUTRAL (fallback) -->
+  <section id="s-thanks" class="narrow hidden">
+    <div class="card center">
+      <div class="hero-icon">✅</div>
+      <h1 id="thanks-title">Thank you!</h1>
+      <p class="lede">Your conversation has been submitted. Our recruitment team will review it and get back to you.</p>
+      <div class="end-actions">
+        <a class="btn" id="thanks-apply" target="_blank" rel="noopener">Apply here →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var DEFAULT_APPLY = "https://www.dreamport.me/en?utm_source=role+play";
+  var $ = function(id){ return document.getElementById(id); };
+  var S = { token:null, view:null, limits:null, busy:false, ended:false, finishing:false, paste:0, deadline:0, timerId:null, candidate:"" };
+  var SCREENS = ["s-id","s-brief","s-chat","s-wait","s-pass","s-train","s-thanks"];
+  function show(id){ SCREENS.forEach(function(s){ $(s).classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function money(n){ return S.view.sym + Number(n).toLocaleString("en-US"); }
+
+  function api(path, body, timeoutMs){
+    var ctrl = new AbortController();
+    var t = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 45000);
+    return fetch(path, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body), signal:ctrl.signal })
+      .then(function(r){ clearTimeout(t); return r.json().then(function(j){ return { status:r.status, data:j }; }); });
+  }
+
+  // ---------- 1. identify ----------
+  function idError(msg){ var e=$("id-err"); e.textContent=msg; e.classList.remove("hidden"); }
+  $("btn-id").addEventListener("click", function(){
+    var cand = $("cand").value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(cand)){ idError("Please enter a valid email address."); return; }
+    $("id-err").classList.add("hidden");
+    var btn = $("btn-id"); btn.disabled = true; btn.textContent = "Preparing your scenario…";
+    api("/api/start", { candidate:cand, accessCode:$("code").value.trim() }).then(function(r){
+      btn.disabled = false; btn.textContent = "Continue →";
+      if (r.status === 401){ $("code-field").classList.remove("hidden"); idError($("code").value ? "That access code isn't valid." : "Please enter the access code from your recruiter."); $("code").focus(); return; }
+      if (r.status === 400){ idError("Please enter a valid email address."); return; }
+      if (r.status !== 200){ idError("Something went wrong. Please try again in a moment."); return; }
+      S.token = r.data.token; S.view = r.data.view; S.limits = r.data.limits; S.candidate = cand;
+      renderBrief(); renderPanel(); show("s-brief");
+    }).catch(function(){ btn.disabled=false; btn.textContent="Continue →"; idError("Connection problem. Please try again."); });
+  });
+  ["cand","code"].forEach(function(id){ $(id).addEventListener("keydown", function(e){ if (e.key==="Enter") $("btn-id").click(); }); });
+
+  // ---------- 2. briefing ----------
+  function renderBrief(){
+    var v = S.view, c = v.customer;
+    $("brief-lede").textContent = "You've just joined DreamPort, and your first task is the follow-up queue: customers who asked for a quote but didn't book with the previous consultant. " +
+      c.name + " asked about a trip " + v.route.replace(" ⇄ ", " ⇄ ") + ". Two options were quoted, but the lead went cold. You're now reaching out to " + c.first + " by chat.";
+    $("brief-goal").innerHTML = "<b>Your goal:</b> re-open the conversation, understand what " + esc(c.first) + " really needs, recommend the option that fits best, and close the booking. If they truly need more time, agree a clear, specific next step.";
+    $("brief-time").textContent = Math.round(S.limits.timeLimitMs/60000);
+  }
+  $("btn-begin").addEventListener("click", startChat);
+
+  // ---------- reference panel ----------
+  function renderPanel(){
+    var v = S.view;
+    $("ref-cust").innerHTML = "<b>" + esc(v.customer.name) + "</b><br>" + esc(v.route) + "<br>" + esc(v.trip) + "<br>Travellers: <b>" + v.travelers + "</b> · Prices in " + esc(v.currency) + "<br><span style='font-size:12px'>" + esc(v.leadSource) + "</span>";
+    $("ref-crm").textContent = v.leadNotes;
+    $("ref-opts").innerHTML = v.options.map(function(o){
+      return "<div class='opt'><div class='opt-head'><span class='letter'>" + o.letter + "</span><span class='opt-air'>" + esc(o.airline) + "</span><span class='opt-price'>" + money(o.price) + "</span></div>" +
+        "<div class='opt-line'>✈ " + esc(o.out) + " · " + esc(o.duration) + "<br>" + esc(o.stops) + "</div>" +
+        "<ul><li>" + esc(o.bags) + "</li><li>" + esc(o.changes) + "</li>" + o.extras.map(function(x){ return "<li>"+esc(x)+"</li>"; }).join("") + "</ul></div>";
+    }).join("");
+    $("ref-pricenote").textContent = v.priceNote;
+    $("ref-addons").innerHTML = v.addons.map(function(a){ return "<div class='addon'><span>" + esc(a.name) + "</span><b>" + money(a.price) + "</b></div>"; }).join("");
+    $("cust-name").textContent = v.customer.name;
+    $("cust-initial").textContent = v.customer.first.charAt(0);
+  }
+  $("ref-toggle").addEventListener("click", function(){
+    var r = $("ref"); r.classList.toggle("collapsed"); $("ref-chev").textContent = r.classList.contains("collapsed") ? "▾" : "▴";
+  });
+
+  // ---------- 3. chat ----------
+  var tEl = $("transcript"), inEl = $("msg"), sendEl = $("btn-send");
+  function add(text, cls){ var d=document.createElement("div"); d.className=cls; d.textContent=text; tEl.appendChild(d); tEl.scrollTop=tEl.scrollHeight; return d; }
+  function typing(on){
+    var t = $("typing");
+    if (on && !t){ t=document.createElement("div"); t.id="typing"; t.className="typing"; t.innerHTML="<i></i><i></i><i></i>"; tEl.appendChild(t); tEl.scrollTop=tEl.scrollHeight; }
+    if (!on && t) t.remove();
+  }
+  function autosize(){ inEl.style.height="auto"; inEl.style.height=Math.min(inEl.scrollHeight,140)+"px"; }
+  function refreshSend(){ sendEl.disabled = S.busy || S.ended || inEl.value.trim().length < 2; }
+
+  function startChat(){
+    show("s-chat");
+    if (window.matchMedia("(max-width:880px)").matches){ $("ref").classList.add("collapsed"); $("ref-chev").textContent = "▾"; }
+    add("Chat connected · " + S.view.customer.first + " is online. You write first.", "sys");
+    inEl.maxLength = S.limits.maxChars;
+    S.deadline = Date.now() + S.limits.timeLimitMs;
+    S.timerId = setInterval(tick, 500); tick();
+    inEl.focus();
+  }
+  function tick(){
+    var left = Math.max(0, S.deadline - Date.now());
+    var m = Math.floor(left/60000), s = Math.floor((left%60000)/1000);
+    $("timer").textContent = m + ":" + (s<10?"0":"") + s;
+    $("timer").classList.toggle("low", left < 120000);
+    if (left <= 0 && !S.ended){ endChat("time", "Time's up — the chat has ended."); }
+  }
+
+  ["paste","drop"].forEach(function(ev){
+    inEl.addEventListener(ev, function(e){ e.preventDefault(); S.paste++; $("hint").textContent = "Pasting is disabled — please type your message."; });
+  });
+  inEl.addEventListener("input", function(){ autosize(); refreshSend(); });
+  inEl.addEventListener("keydown", function(e){ if (e.key==="Enter" && !e.shiftKey){ e.preventDefault(); if (!sendEl.disabled) sendMsg(); } });
+  sendEl.addEventListener("click", sendMsg);
+
+  function sendMsg(){
+    var text = inEl.value.trim();
+    if (text.length < 2 || S.busy || S.ended) return;
+    S.busy = true; refreshSend();
+    add(text, "msg agent");
+    inEl.value = ""; autosize();
+    setTimeout(function(){ if (S.busy) typing(true); }, 700);
+    api("/api/chat", { token:S.token, message:text, pasteAttempts:S.paste }, 40000).then(function(r){
+      typing(false);
+      if (r.status !== 200){
+        if (r.data && (r.data.error==="ENDED" || r.data.error==="STALE")){ endChat("ended", "This chat has ended."); return; }
+        add("Message not delivered — please try sending it again.", "sys");
+        inEl.value = text; autosize(); S.busy=false; refreshSend(); return;
+      }
+      S.token = r.data.token;
+      if (r.data.reason === "time"){ endChat("time", "Time's up — the chat has ended."); return; }
+      var delay = Math.min(2200, 500 + r.data.reply.length * 18);
+      typing(true);
+      setTimeout(function(){
+        typing(false);
+        add(r.data.reply, "msg customer");
+        S.busy = false; refreshSend(); inEl.focus();
+        if (r.data.ended) endChat("customer", S.view.customer.first + " has left the chat.");
+      }, delay);
+    }).catch(function(){
+      typing(false); add("Connection problem — please try sending again.", "sys");
+      inEl.value = text; autosize(); S.busy=false; refreshSend();
+    });
+  }
+
+  // end chat (candidate-initiated, with inline confirm)
+  function endLink(){
+    $("end-wrap").innerHTML = "<button class='linkbtn' id='btn-end'>End chat</button>";
+    $("btn-end").onclick = function(){
+      $("end-wrap").innerHTML = "<span class='confirm-end'>End the chat now? <button class='yes' id='end-yes'>Yes, end</button><button id='end-no'>Keep chatting</button></span>";
+      $("end-yes").onclick = function(){ endChat("candidate", "You ended the chat."); };
+      $("end-no").onclick = endLink;
+    };
+  }
+  endLink();
+
+  function endChat(reason, note){
+    if (S.ended) return;
+    S.ended = true; clearInterval(S.timerId);
+    inEl.disabled = true; refreshSend(); $("end-wrap").innerHTML = "";
+    $("cust-status").textContent = "Chat ended"; $("cust-status").classList.remove("on");
+    add(note, "sys");
+    setTimeout(function(){ finish(reason); }, 1600);
+  }
+
+  function finish(reason){
+    if (S.finishing) return; S.finishing = true;
+    show("s-wait");
+    api("/api/finish", { token:S.token, reason:reason, pasteAttempts:S.paste }, 70000)
+      .then(function(r){ showEnd(r.data || {}); })
+      .catch(function(){ showEnd({ outcome:"neutral" }); });
+  }
+
+  // ---------- 4. end screens (never shows a score) ----------
+  function showEnd(d){
+    var apply = d.applyUrl || DEFAULT_APPLY;
+    var training = d.trainingUrl || apply;
+    if (d.outcome === "pass"){
+      $("pass-apply").href = apply;
+      show("s-pass");
+    } else if (d.outcome === "training"){
+      $("train-start").href = training;
+      $("train-apply").href = apply;
+      if (training === apply){ $("train-start").textContent = "Start your free training — apply here →"; $("train-apply").classList.add("hidden"); }
+      show("s-train");
+    } else {
+      $("thanks-apply").href = apply;
+      show("s-thanks");
+    }
+  }
+
+  // If the tab is closed mid-chat, still submit what exists (marked abandoned).
+  window.addEventListener("pagehide", function(){
+    if (S.token && !S.finishing && $("s-chat").classList.contains("hidden") === false){
+      S.finishing = true;
+      try { navigator.sendBeacon("/api/finish", new Blob([JSON.stringify({ token:S.token, reason:"abandoned", pasteAttempts:S.paste })], { type:"application/json" })); } catch(e){}
+    }
+  });
+})();
+</script>
+</body>
+</html>
